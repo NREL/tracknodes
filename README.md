@@ -32,8 +32,8 @@ Usage
 Setup a cronjob on the admin node.
 
 ```shell
-crontab -e
-*/30 * * * * (/usr/bin/tracknodes >/dev/null 2>&1)
+crontab -u root -e
+* * * * * (/usr/bin/tracknodes >/dev/null 2>&1)
 ```
 
 Use the below command to see the history of node changes.
