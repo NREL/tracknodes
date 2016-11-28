@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+""" Tracknodes CLI """
+from tracknodes.cli import Cli
+import sys
+
+if __name__ == "__main__":
+    cli = Cli()
+    cli.run()
+    sys.exit(0)
