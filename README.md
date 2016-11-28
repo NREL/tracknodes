@@ -32,7 +32,7 @@ Usage
 Setup a cronjob on the admin node.
 
 ```shell
-# crontab -u root -e
+$ crontab -u root -e
 # Track Node State Every Minute
 * * * * * (/usr/bin/tracknodes >/dev/null 2>&1)
 ```
@@ -40,7 +40,7 @@ Setup a cronjob on the admin node.
 Use the below command to see the history of node changes.
 
 ```shell
-# tracknodes
+$ tracknodes
 -- History of Node Failures--
 n101 | 2016-11-28 21:30:01 | online | ''
 n101 | 2016-11-28 20:30:01 | offline,down | 'Hardware issue bad DIMM'
