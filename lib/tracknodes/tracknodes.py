@@ -199,7 +199,7 @@ class TrackNodes:
             self.cur.execute("SELECT * FROM NodeStates ORDER BY datetime(Time) DESC")
             rows = self.cur.fetchall()
             for row in rows:
-                print "%s | %s | %s | '%s'" % (row[0], row[3], TrackNodes.decode_state(row[1]), row[2])
+                print("%s | %s | %s | '%s'" % (row[0], row[3], TrackNodes.decode_state(row[1]), row[2]))
             print("-- --")
             print("    ")
         except IOError as e:
