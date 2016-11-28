@@ -17,7 +17,7 @@ script:
     - 'export PYTHONPATH="${PYTHONPATH}:./lib"'
     - 'export PYTHONPATH="${PYTHONPATH}:./lib/tracknodes"'
     - 'echo "$PYTHONPATH"'
-    - './run_tests.sh'
+    - 'coverage run --source=tracknodes $(which nosetests) -w test/units/'
 
 after_success:
     - coveralls
