@@ -1,6 +1,6 @@
 import nose
 import unittest
-from tracknodes import TrackNodes
+from tracknodes.tracknodes import TrackNodes
 
 
 class TestTrackNodes(unittest.TestCase):
