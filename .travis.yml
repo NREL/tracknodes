@@ -9,11 +9,14 @@ python:
 
 # Install Dependencies
 install:
-    - pip install nose
-    - pip install coveralls
+    - pip install nose coveralls
 
 # Run Tests
 script:
+    - 'pwd'
+    - 'export PYTHONPATH="${PYTHONPATH}:./lib"'
+    - 'export PYTHONPATH="${PYTHONPATH}:./lib/tracknodes"'
+    - 'echo "$PYTHONPATH"'
     - './run_tests.sh'
 
 after_success:
