@@ -10,6 +10,7 @@ python:
 # Install Dependencies
 install:
     - pip install nose coveralls
+    - 'python setup.py install'
 
 # Run Tests
 script:
