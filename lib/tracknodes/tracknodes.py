@@ -5,7 +5,7 @@ import errno
 
 
 class TrackNodes:
-    def __init__(self, dbfile=None, pbsnodes_cmd=None, verbose=False):
+    def __init__(self, update=False, dbfile=None, pbsnodes_cmd=None, verbose=False):
         """
         Create initial sqlite database and initialize connection
         """
@@ -14,7 +14,7 @@ class TrackNodes:
         self.current_failed = []
 
         self.dbfile = dbfile
-        self.pbsnodes_cmd = pbsnodes_cmd
+        self.pbsnodes_cmd = TrackNodes.which(pbsnodes_cmd)
         self.verbose = verbose
 
         # Look for pbsnodes as option, in PATH, then specific locations
@@ -50,9 +50,11 @@ class TrackNodes:
                 self.cur.execute("CREATE TABLE NodeStates(Name TEXT, State INT, Comment TEXT, Time TEXT)")
                 self.con.commit()
 
-            self.parse_pbsnodes()
-            self.online_nodes()
-            self.fail_nodes()
+            # Get Latest Node Information, Update Database
+            if update:
+                self.parse_pbsnodes()
+                self.online_nodes()
+                self.fail_nodes()
 
     def online_nodes(self):
         """

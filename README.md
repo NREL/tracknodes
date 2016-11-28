@@ -34,7 +34,7 @@ Setup a cronjob on the admin node.
 ```shell
 $ crontab -u root -e
 # Track Node State Every Minute
-* * * * * (/usr/bin/tracknodes >/dev/null 2>&1)
+* * * * * (/usr/bin/tracknodes --update >/dev/null 2>&1)
 ```
 
 Use the below command to see the history of node changes.
@@ -49,6 +49,22 @@ n092 | 2016-11-27 12:00:01 | offline | 'Hardware issue failed disk'
 n021 | 2016-11-27 09:00:01 | online | ''
 n021 | 2016-11-26 19:00:01 | offline,down | 'DIMM Configuration Error'
 -- --
+```
+
+Use --help to show all options.
+
+```shell
+$ tracknodes --help
+Usage: tracknodes [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -U, --update          Update Database From PBS
+  -f DBFILE, --dbfile=DBFILE
+                        SQL-Lite Database File
+  -c PBSNODESCMD, --pbsnodes_cmd=PBSNODESCMD
+                        pbsnodes binary location, example: /opt/pbsnodes
+  -v, --verbose         Verbose Output
 ```
 
 License
