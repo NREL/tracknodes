@@ -76,7 +76,7 @@ class TrackNodes:
                 onlinenodes.append(lx)
 
         for node in onlinenodes:
-            self.cur.execute("INSERT INTO NodeStates VALUES(?, ?, ?, datetime('now'))", (node[0], 0, node[2]))
+            self.cur.execute("INSERT INTO NodeStates VALUES(?, ?, ?, datetime('now'))", (node[0], 0, ''))
             self.cur.execute("DELETE FROM CurrentFailedNodes WHERE Name LIKE ?", (node[0],))
             self.con.commit()
 
