@@ -22,7 +22,7 @@ setup(
     author_email='david.whiteside@nrel.gov',
     url='https://github.com/NREL/tracknodes',
     license='GPL',
-    install_requires=[],
+    install_requires=["PyYAML"],
     package_dir={
         '': 'lib'},
     packages=find_packages('lib'),

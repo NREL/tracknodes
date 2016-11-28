@@ -118,6 +118,9 @@ class TrackNodes:
             """ File must have execute bit set """
             return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
+        if program is None:
+            return None
+
         fpath, fname = os.path.split(program)
         if fpath:
             if is_exe(program):

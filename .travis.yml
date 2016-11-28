@@ -9,7 +9,7 @@ python:
 
 # Install Dependencies
 install:
-    - pip install nose coveralls
+    - pip install nose coveralls PyYAML
 
 # Run Tests
 script:

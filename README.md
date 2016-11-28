@@ -51,7 +51,14 @@ n021 | 2016-11-26 19:00:01 | offline,down | 'DIMM Configuration Error'
 -- --
 ```
 
-Use --help to show all options.
+You can setup the configuration file for tracknodes to change the database location or the command to get node status.  Use the below as an example.
+
+```shell
+$ cat /etc/tracknodes.conf
+---
+dbfile: "/opt/tracknodes.db"
+pbsnodes_cmd: "/opt/pbsnodes"
+```
 
 ```shell
 $ tracknodes --help
