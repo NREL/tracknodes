@@ -2,6 +2,7 @@ import sqlite3 as lite
 import os
 import subprocess
 import errno
+import re
 
 
 class TrackNodes:
@@ -132,12 +133,14 @@ class TrackNodes:
             self.parse_pbsnodes_cmd("-nl")
         elif self.resourcemanager == "pbspro":
             self.parse_pbsnodes_cmd("-l")
+        elif self.resourcemanager == "slurm":
+            self.parse_sinfo_cmd()
         else:
-            raise Exception("Unable to parse nodes_cmd, unsupported resource manager")
+            raise Exception("Unable to parse nodes_cmd, unsupported resource manager: %s" % self.resourcemanager)
 
     def parse_pbsnodes_cmd(self, cmd_args):
         """
-        Run pbsnodes -nl and parse the output and return an array of tuples [(nodename, state, comment),]
+        Run pbsnodes -nl (Torque) or pbsnodes -l (PBSpro) and parse the output and return an array of tuples [(nodename, state, comment),]
         """
         for line in subprocess.Popen([self.nodes_cmd, cmd_args], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
             fields = line.split()
@@ -148,6 +151,32 @@ class TrackNodes:
             else:
                 if self.verbose:
                     print("Parse Error on line: '%s'" % line)
+
+    def parse_sinfo_cmd(self):
+        """
+        Run sinfo -dR (slurm) and parse the output and return an array of tuples [(nodename, state, comment),]
+        """
+        print("test")
+        line_num = 0
+        for line in subprocess.Popen([self.nodes_cmd, '-dR'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
+            # Skip First Line
+            if line_num == 0:
+                line_num += 1
+                continue
+
+            m = re.search(r'^(.*?)\s+([a-zA-Z0-9\-_]+)\s+([0-9\-:T]+)\s+([a-zA-Z0-9_\-]+)$', line)
+            if m:
+                reason = m.group(1)
+                username = m.group(2)
+                timestamp = m.group(3)
+                nodename = m.group(4)
+                # -dR returns only down nodes, so the state is down
+                self.current_failed.append((nodename, TrackNodes.encode_state('down'), reason))
+            else:
+                if self.verbose:
+                    print("Parse Error on line: '%s'" % line)
+
+            line_num += 1
 
     @staticmethod
     def which(program):
