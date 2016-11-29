@@ -57,7 +57,7 @@ You can setup the configuration file for tracknodes to change the database locat
 $ cat /etc/tracknodes.conf
 ---
 dbfile: "/opt/tracknodes.db"
-pbsnodes_cmd: "/opt/pbsnodes"
+cmd: "/opt/pbsnodes"
 ```
 
 ```shell
@@ -69,8 +69,8 @@ Options:
   -U, --update          Update Database From PBS
   -f DBFILE, --dbfile=DBFILE
                         SQL-Lite Database File
-  -c PBSNODESCMD, --pbsnodes_cmd=PBSNODESCMD
-                        pbsnodes binary location, example: /opt/pbsnodes
+  -c CMD, --cmd=CMD
+                        binary location of command to show node state, example: /opt/pbsnodes, /opt/sinfo
   -v, --verbose         Verbose Output
 ```
 

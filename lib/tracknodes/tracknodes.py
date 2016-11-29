@@ -5,7 +5,7 @@ import errno
 
 
 class TrackNodes:
-    def __init__(self, update=False, dbfile=None, pbsnodes_cmd=None, verbose=False):
+    def __init__(self, update=False, dbfile=None, nodes_cmd=None, verbose=False):
         """
         Create initial sqlite database and initialize connection
         """
@@ -13,23 +13,32 @@ class TrackNodes:
         self.con = None
         self.current_failed = []
 
+        self.update = update
         self.dbfile = dbfile
-        self.pbsnodes_cmd = TrackNodes.which(pbsnodes_cmd)
+        self.nodes_cmd = TrackNodes.which(nodes_cmd)
         self.verbose = verbose
+        self.resourcemanager = None
 
+    def find_nodes_cmd(self):
+        """
+        Search for nodes command.
+        """
         # Look for pbsnodes as option, in PATH, then specific locations
-        if self.pbsnodes_cmd is None:
-            if TrackNodes.which("pbsnodes") is not None:
-                self.pbsnodes_cmd = TrackNodes.which("pbsnodes")
-            if TrackNodes.which("/usr/bin/pbsnodes") is not None:
-                self.pbsnodes_cmd = "/usr/bin/pbsnodes"
-            elif TrackNodes.which("/bin/pbsnodes") is not None:
-                self.pbsnodes_cmd = "/bin/pbsnodes"
-            elif TrackNodes.which("/usr/local/bin/pbsnodes") is not None:
-                self.pbsnodes_cmd = "/usr/local/bin/pbsnodes"
-            else:
-                raise Exception("Cannot find pbsnodes in PATH.")
+        nodecmd_torque_search_cmds = ["pbsnodes", "/usr/bin/pbsnodes", "/bin/pbsnodes", "/usr/local/bin/pbsnodes"]
+        nodecmd_slurm_search_cmds = ["sinfo", "/usr/bin/sinfo", "/bin/sinfo", "/usr/local/bin/sinfo"]
+        nodecmd_search_cmds = nodecmd_torque_search_cmds + nodecmd_slurm_search_cmds
+        found_node_cmd = False
+        if self.nodes_cmd is None:
+            for node_cmd in nodecmd_search_cmds:
+                if TrackNodes.which(node_cmd) is not None:
+                    self.nodes_cmd = TrackNodes.which(node_cmd)
+                    self.detect_resourcemanager()
+                    found_node_cmd = True
+                    break
+        if found_node_cmd == False:
+            raise Exception("Cannot find pbsnodes or sinfo in PATH.")
 
+    def connect_db(self):
         if self.dbfile is None:
             self.dbfile = "%s.%s" % (os.path.realpath(__file__), "db")
 
@@ -50,11 +59,20 @@ class TrackNodes:
                 self.cur.execute("CREATE TABLE NodeStates(Name TEXT, State INT, Comment TEXT, Time TEXT)")
                 self.con.commit()
 
-            # Get Latest Node Information, Update Database
-            if update:
-                self.parse_pbsnodes()
-                self.online_nodes()
-                self.fail_nodes()
+    def detect_resourcemanager(self):
+        nodes_cmd_base = os.path.basename(self.nodes_cmd).rstrip()
+        if nodes_cmd_base == "sinfo":
+            self.resourcemanager = "slurm"
+        elif nodes_cmd_base == "pbsnodes":
+            if self.detect_pbspro() == True:
+                self.resourcemanager = "pbspro"
+            else:
+                self.resourcemanager = "torque"
+        else:
+            raise Exception("Unable to determine resource manager for nodes_cmd: %s, binary: %s" % (self.nodes_cmd, nodes_cmd_base))
+
+        if self.verbose:
+            print("Resource Manager Detected as %s" % self.resourcemanager)
 
     def online_nodes(self):
         """
@@ -97,17 +115,39 @@ class TrackNodes:
                     self.cur.execute("UPDATE CurrentFailedNodes SET State=?,Comment=? WHERE Name=?", (state, comment, nodename))
                     self.cur.execute("INSERT INTO NodeStates VALUES(?, ?, ?, datetime('now'))", (nodename, state, comment))
 
-    def parse_pbsnodes(self):
+    def detect_pbspro(self):
+        """
+        Detect if its PBSpro vs Torque
+        """
+        for line in subprocess.Popen([self.nodes_cmd, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
+            fields = line.split()
+            if fields[0] == "pbs_version":
+                return True
+            else:
+                break
+        return False
+
+    def parse_nodes_cmd(self):
+        if self.resourcemanager == "torque":
+            self.parse_pbsnodes_cmd("-nl")
+        elif self.resourcemanager == "pbspro":
+            self.parse_pbsnodes_cmd("-l")
+        else:
+            raise Exception("Unable to parse nodes_cmd, unsupported resource manager")
+
+    def parse_pbsnodes_cmd(self, cmd_args):
         """
         Run pbsnodes -nl and parse the output and return an array of tuples [(nodename, state, comment),]
         """
-
-
-
-        for line in subprocess.Popen([self.pbsnodes_cmd, '-nl'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
+        for line in subprocess.Popen([self.nodes_cmd, cmd_args], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
             fields = line.split()
-            if len(fields) >= 3:
+            if len(fields) == 2:
+                self.current_failed.append((fields[0], TrackNodes.encode_state(fields[1]), ''))
+            elif len(fields) >= 3:
                 self.current_failed.append((fields[0], TrackNodes.encode_state(fields[1]), ' '.join(fields[2::])))
+            else:
+                if self.verbose:
+                    print("Parse Error on line: '%s'" % line)
 
     @staticmethod
     def which(program):
@@ -133,7 +173,6 @@ class TrackNodes:
                     return exe_file
 
         return None
-
 
     @staticmethod
     def encode_state(str):
@@ -218,3 +257,16 @@ class TrackNodes:
         """
         if self.con:
             self.con.close()
+
+    def run(self):
+        self.find_nodes_cmd()
+
+        self.connect_db()
+
+        # Get Latest Node Information, Update Database
+        if self.update:
+            self.parse_nodes_cmd()
+            self.online_nodes()
+            self.fail_nodes()
+
+        self.print_history()

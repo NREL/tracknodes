@@ -20,9 +20,9 @@ class Cli(object):
                           help="SQL-Lite Database File",
                           metavar="DBFILE",
                           default=None)
-        parser.add_option("-c", "--pbsnodes_cmd", dest="pbsnodes_cmd",
-                          help="pbsnodes binary location, example: /opt/pbsnodes",
-                          metavar="PBSNODESCMD",
+        parser.add_option("-c", "--cmd", dest="cmd",
+                          help="binary location, example: /opt/pbsnodes, /opt/sinfo",
+                          metavar="CMD",
                           default=None)
         parser.add_option("-v", "--verbose", dest="verbose",
                           help="Verbose Output",
@@ -31,7 +31,7 @@ class Cli(object):
                           default=False)
         (options, args) = parser.parse_args()
         self.update = options.update
-        self.pbsnodes_cmd = options.pbsnodes_cmd
+        self.cmd = options.cmd
         self.dbfile = options.dbfile
         self.verbose = options.verbose
 
@@ -43,11 +43,12 @@ class Cli(object):
                     if "dbfile" in tracknodes_conf:
                         if self.dbfile is None:
                             self.dbfile = str(tracknodes_conf["dbfile"])
-                    if "pbsnodes_cmd" in tracknodes_conf:
-                        if self.pbsnodes_cmd is None:
-                            self.pbsnodes_cmd = str(tracknodes_conf["pbsnodes_cmd"])
+                    if "cmd" in tracknodes_conf:
+                        if self.cmd is None:
+                            self.cmd = str(tracknodes_conf["cmd"])
 
     def run(self):
         """ EntryPoint Of Application """
-        pbsnodes = TrackNodes(update=self.update, dbfile=self.dbfile, pbsnodes_cmd=self.pbsnodes_cmd, verbose=self.verbose)
-        pbsnodes.print_history()
+        tracknodes = TrackNodes(update=self.update, dbfile=self.dbfile, nodes_cmd=self.cmd, verbose=self.verbose)
+
+        tracknodes.run()
