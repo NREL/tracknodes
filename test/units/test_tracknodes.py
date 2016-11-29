@@ -14,3 +14,15 @@ class TestTrackNodes(unittest.TestCase):
     def test_which(self):
         full_env_path = TrackNodes.which("env")
         assert( full_env_path == "/usr/bin/env" or full_env_path == "/bin/env" )
+
+    def test_detect_resourcemanager_slurm_fullpath(self):
+        tracknodes = TrackNodes()
+        tracknodes.nodes_cmd = "/usr/bin/sinfo"
+        tracknodes.detect_resourcemanager()
+        assert( tracknodes.resourcemanager == "slurm" )
+
+    def test_detect_resourcemanager_slurm_shortpath(self):
+        tracknodes = TrackNodes()
+        tracknodes.nodes_cmd = "sinfo"
+        tracknodes.detect_resourcemanager()
+        assert( tracknodes.resourcemanager == "slurm" )
