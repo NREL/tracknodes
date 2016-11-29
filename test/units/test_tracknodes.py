@@ -11,7 +11,7 @@ class TestTrackNodes(unittest.TestCase):
     def test_decode_state(self):
         assert( TrackNodes.decode_state(3) == "offline,down" )
 
-    def test_which(self):
+    def test_which_shortpath(self):
         full_env_path = TrackNodes.which("env")
         assert( full_env_path == "/usr/bin/env" or full_env_path == "/bin/env" )
 
