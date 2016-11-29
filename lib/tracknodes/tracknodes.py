@@ -141,8 +141,13 @@ class TrackNodes:
         """
         for line in subprocess.Popen([self.nodes_cmd, cmd_args], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
             fields = line.split()
-            if len(fields) >= 3:
+            if len(fields) == 2:
+                self.current_failed.append((fields[0], TrackNodes.encode_state(fields[1]), ''))
+            elif len(fields) >= 3:
                 self.current_failed.append((fields[0], TrackNodes.encode_state(fields[1]), ' '.join(fields[2::])))
+            else:
+                if self.verbose:
+                    print("Parse Error on line: '%s'" % line)
 
     @staticmethod
     def which(program):
