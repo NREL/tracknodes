@@ -121,8 +121,12 @@ class TrackNodes:
         """
         Detect if its PBSpro vs Torque
         """
-        for line in Popen([self.nodes_cmd, '--version'], stdout=PIPE, stderr=PIPE).communicate()[0].rstrip().split("\n"):
+        for line in Popen([self.nodes_cmd, '--version'], stdout=PIPE, stderr=PIPE).communicate()[1].strip().split("\n"):
             fields = line.split()
+
+            if len(fields) > 0:
+                raise Exception("Unable to determine PBSpro or Torque")
+
             if fields[0] == "pbs_version":
                 return True
             else:
