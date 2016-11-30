@@ -4,7 +4,7 @@ tracknodes
 Description
 ===========
 
-Tracknodes keeps a history of node state and comment changes. It allows system administrators of HPC systems to determine when nodes were down and discover trends such as recurring issues. Supports Torque and PBSpro and has limited support for SLURM.
+Tracknodes keeps a history of node state and comment changes. It allows system administrators of HPC systems to determine when nodes were down and discover trends such as recurring issues. Supports Torque, PBSpro and has limited support for SLURM.
 
 [![Build Status](https://secure.travis-ci.org/NREL/tracknodes.png?branch=develop "tracknodes latest build")](http://travis-ci.org/NREL/tracknodes)
 [![PIP Version](https://img.shields.io/pypi/v/tracknodes.svg "tracknodes PyPI version")](https://pypi.python.org/pypi/tracknodes)
