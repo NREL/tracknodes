@@ -124,7 +124,7 @@ class TrackNodes:
         for line in Popen([self.nodes_cmd, '--version'], stdout=PIPE, stderr=PIPE).communicate()[1].strip().split("\n"):
             fields = line.split()
 
-            if len(fields) < 0:
+            if len(fields) <= 0:
                 raise Exception("Unable to determine PBSpro or Torque")
 
             if fields[0] == "pbs_version":
