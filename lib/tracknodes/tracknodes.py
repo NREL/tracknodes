@@ -34,11 +34,13 @@ class TrackNodes:
             for node_cmd in nodecmd_search_cmds:
                 if TrackNodes.which(node_cmd) is not None:
                     self.nodes_cmd = TrackNodes.which(node_cmd)
-                    self.detect_resourcemanager()
                     found_node_cmd = True
                     break
         if found_node_cmd == False:
             raise Exception("Cannot find pbsnodes or sinfo in PATH.")
+
+        self.detect_resourcemanager()
+
         if self.verbose:
             print("cmd: %s" % self.nodes_cmd)
 
@@ -64,7 +66,7 @@ class TrackNodes:
                 self.con.commit()
 
     def detect_resourcemanager(self):
-        nodes_cmd_base = os.path.basename(self.nodes_cmd).rstrip()
+        nodes_cmd_base = os.path.basename(self.nodes_cmd).strip()
         if nodes_cmd_base == "sinfo":
             self.resourcemanager = "slurm"
         elif nodes_cmd_base == "pbsnodes":
@@ -143,7 +145,7 @@ class TrackNodes:
         elif self.resourcemanager == "slurm":
             self.parse_sinfo_cmd()
         else:
-            raise Exception("Unable to parse nodes_cmd, unsupported resource manager: %s" % self.resourcemanager)
+            raise Exception("Unable to parse nodes_cmd: %s, unsupported resource manager: %s" % (self.nodes_cmd, self.resourcemanager))
 
     def parse_pbsnodes_cmd(self, cmd_args):
         """
@@ -199,13 +201,13 @@ class TrackNodes:
         fpath, fname = os.path.split(program)
         if fpath:
             if is_exe(program):
-                return program
+                return program.strip()
         else:
             for path in os.environ["PATH"].split(os.pathsep):
                 path = path.strip('"')
                 exe_file = os.path.join(path, program)
                 if is_exe(exe_file):
-                    return exe_file
+                    return exe_file.strip()
 
         return None
 
