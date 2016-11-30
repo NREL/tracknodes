@@ -17,7 +17,7 @@ except ImportError:
 setup(
     name='tracknodes',
     version=__version__,
-    description='Tracknodes keeps a history of node state and comment changes. Currently supports the Torque resource manager.',
+    description='Tracknodes keeps a history of node state and comment changes. It allows system administrators of HPC systems to determine when nodes were down and discover trends such as recurring issues. Supports Torque and PBSpro and has limited support for SLURM.',
     author=__author__,
     author_email='david.whiteside@nrel.gov',
     url='https://github.com/NREL/tracknodes',

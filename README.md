@@ -4,7 +4,7 @@ tracknodes
 Description
 ===========
 
-Tracknodes keeps a history of node state and comment changes. Currently supports the Torque resource manager.
+Tracknodes keeps a history of node state and comment changes. It allows system administrators of HPC systems to determine when nodes were down and discover trends such as recurring issues. Supports Torque and PBSpro and has limited support for SLURM.
 
 [![Build Status](https://secure.travis-ci.org/NREL/tracknodes.png?branch=develop "tracknodes latest build")](http://travis-ci.org/NREL/tracknodes)
 [![PIP Version](https://img.shields.io/pypi/v/tracknodes.svg "tracknodes PyPI version")](https://pypi.python.org/pypi/tracknodes)
@@ -29,7 +29,7 @@ $ easy_install tracknodes
 Usage
 ===========
 
-Setup a cronjob on the admin node.
+Setup a cronjob on an admin node. This step is required for node state changes to be tracked.
 
 ```shell
 $ crontab -u root -e
@@ -59,6 +59,16 @@ $ cat /etc/tracknodes.conf
 dbfile: "/opt/tracknodes.db"
 cmd: "/opt/pbsnodes"
 ```
+
+Tracknodes uses a sqlite database to store the node history, you can determine what database its using with the -v argument.
+
+```shell
+$ tracknodes -v
+tracknodes database: /usr/lib/python2.7/site-packages/tracknodes-1.0.0-py2.7.egg/tracknodes/tracknodes.pyc.db
+...
+```
+
+For usage information you can use --help.
 
 ```shell
 $ tracknodes --help
