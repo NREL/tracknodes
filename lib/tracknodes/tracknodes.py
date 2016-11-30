@@ -1,6 +1,6 @@
 import sqlite3 as lite
 import os
-import subprocess
+from subprocess import Popen, PIPE
 import errno
 import re
 
@@ -121,7 +121,7 @@ class TrackNodes:
         """
         Detect if its PBSpro vs Torque
         """
-        for line in subprocess.Popen([self.nodes_cmd, '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
+        for line in Popen([self.nodes_cmd, '--version'], stdout=PIPE, stderr=PIPE).communicate()[0].rstrip().split("\n"):
             fields = line.split()
             if fields[0] == "pbs_version":
                 return True
@@ -143,7 +143,7 @@ class TrackNodes:
         """
         Run pbsnodes -nl (Torque) or pbsnodes -l (PBSpro) and parse the output and return an array of tuples [(nodename, state, comment),]
         """
-        for line in subprocess.Popen([self.nodes_cmd, cmd_args], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
+        for line in Popen([self.nodes_cmd, cmd_args], stdout=PIPE, stderr=PIPE).communicate()[0].rstrip().split("\n"):
             fields = line.split()
             if len(fields) == 2:
                 self.current_failed.append((fields[0], TrackNodes.encode_state(fields[1]), ''))
@@ -157,9 +157,8 @@ class TrackNodes:
         """
         Run sinfo -dR (slurm) and parse the output and return an array of tuples [(nodename, state, comment),]
         """
-        print("test")
         line_num = 0
-        for line in subprocess.Popen([self.nodes_cmd, '-dR'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].rstrip().split("\n"):
+        for line in Popen([self.nodes_cmd, '-dR'], stdout=PIPE, stderr=PIPE).communicate()[0].rstrip().split("\n"):
             # Skip First Line
             if line_num == 0:
                 line_num += 1
