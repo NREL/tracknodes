@@ -43,14 +43,14 @@ class TestTrackNodes(unittest.TestCase):
         tn.detect_resourcemanager()
         assert( tn.resourcemanager == "slurm" )
 
-    @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="pbsnodes")
+    @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="sinfo")
     def test_run(self, mock_which):
         out = StringIO()
         orig_stdout = sys.stdout
         sys.stdout = out
 
-        tn = TrackNodes(nodes_cmd="pbsnodes")
-
+        tn = TrackNodes(nodes_cmd="sinfo")
+        tn.resourcemanager="slurm"
         tn.run()
 
         sys.stdout = orig_stdout
