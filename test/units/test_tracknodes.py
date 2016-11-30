@@ -73,4 +73,4 @@ class TestTrackNodes(unittest.TestCase):
 
         print(out.getvalue())
 
-        assert( "n010 | 2016-11-30 20:27:04 | down | 'broken ram'" in out.getvalue() )
+        assert( "| down | 'broken ram'" in out.getvalue() )
