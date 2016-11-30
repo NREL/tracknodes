@@ -41,7 +41,8 @@ Use the below command to see the history of node changes.
 
 ```shell
 $ tracknodes
--- History of Node Failures--
+History of Nodes
+=========
 n101 | 2016-11-28 21:30:01 | online | ''
 n101 | 2016-11-28 20:30:01 | offline,down | 'Hardware issue bad DIMM'
 n092 | 2016-11-27 19:30:01 | online | ''
