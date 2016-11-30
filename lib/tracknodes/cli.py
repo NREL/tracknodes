@@ -17,7 +17,7 @@ class Cli(object):
                           action="store_true",
                           default=False)
         parser.add_option("-f", "--dbfile", dest="dbfile",
-                          help="SQL-Lite Database File",
+                          help="Database File",
                           metavar="DBFILE",
                           default=None)
         parser.add_option("-c", "--cmd", dest="cmd",
