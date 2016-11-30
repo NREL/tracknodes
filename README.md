@@ -65,7 +65,8 @@ Tracknodes uses a sqlite database to store the node history, you can determine w
 
 ```shell
 $ tracknodes -v
-tracknodes database: ~/.tracknodes.db
+cmd: "/opt/pbsnodes"
+dbfile: ~/.tracknodes.db
 ...
 ```
 
