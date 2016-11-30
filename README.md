@@ -65,6 +65,7 @@ Tracknodes uses a sqlite database to store the node history, you can determine w
 
 ```shell
 $ tracknodes -v
+Resource Manager Detected as torque
 cmd: "/opt/pbsnodes"
 dbfile: ~/.tracknodes.db
 ...
