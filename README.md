@@ -81,7 +81,7 @@ Options:
   -h, --help            show this help message and exit
   -U, --update          Update Database From Current Node States
   -f DBFILE, --dbfile=DBFILE
-                        SQL-Lite Database File
+                        Database File
   -c CMD, --cmd=CMD
                         binary location of command to show node state, example: /opt/pbsnodes, /opt/sinfo
   -v, --verbose         Verbose Output
