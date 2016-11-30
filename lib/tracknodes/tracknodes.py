@@ -40,7 +40,7 @@ class TrackNodes:
         if found_node_cmd == False:
             raise Exception("Cannot find pbsnodes or sinfo in PATH.")
         if self.verbose:
-            print("cmd: %s" % self.node_cmd)
+            print("cmd: %s" % self.nodes_cmd)
 
     def connect_db(self):
         if self.dbfile is None:
