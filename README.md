@@ -64,7 +64,7 @@ Tracknodes uses a sqlite database to store the node history, you can determine w
 
 ```shell
 $ tracknodes -v
-tracknodes database: /usr/lib/python2.7/site-packages/tracknodes-1.0.0-py2.7.egg/tracknodes/tracknodes.pyc.db
+tracknodes database: ~/.tracknodes.db
 ...
 ```
 
