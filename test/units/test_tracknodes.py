@@ -3,8 +3,12 @@ import mock
 import unittest
 import sys
 import types
-from StringIO import StringIO
 from tracknodes.tracknodes import TrackNodes
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 
 class mock_Popen(object):
