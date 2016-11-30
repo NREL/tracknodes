@@ -79,7 +79,7 @@ Usage: tracknodes [options]
 
 Options:
   -h, --help            show this help message and exit
-  -U, --update          Update Database From PBS
+  -U, --update          Update Database From Current Node States
   -f DBFILE, --dbfile=DBFILE
                         SQL-Lite Database File
   -c CMD, --cmd=CMD

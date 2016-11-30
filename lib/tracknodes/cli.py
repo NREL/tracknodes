@@ -12,7 +12,7 @@ class Cli(object):
         """ Setup Arguments and Options for CLI """
         parser = optparse.OptionParser()
         parser.add_option("-U", "--update", dest="update",
-                          help="Update Database From PBS",
+                          help="Update Database From Current Node States",
                           metavar="UPDATE",
                           action="store_true",
                           default=False)
