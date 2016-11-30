@@ -42,7 +42,7 @@ class TrackNodes:
 
     def connect_db(self):
         if self.dbfile is None:
-            self.dbfile = "%s.%s" % (os.path.realpath(__file__), "db")
+            self.dbfile = os.path.expanduser("~/.tracknodes.db")
 
         if (False == os.path.isfile(self.dbfile)):
             firstrun = True
