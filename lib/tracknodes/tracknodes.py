@@ -272,13 +272,13 @@ class TrackNodes:
         Print database information to STDOUT
         """
         try:
-            print("-- History of Node Failures--")
+            print("History of Nodes")
+            print("=========")
             self.cur.execute("SELECT * FROM NodeStates ORDER BY datetime(Time) DESC")
             rows = self.cur.fetchall()
             for row in rows:
                 print("%s | %s | %s | '%s'" % (row[0], row[3], TrackNodes.decode_state(row[1]), row[2]))
-            print("-- --")
-            print("    ")
+            print("")
         except IOError as e:
             if e.errno == errno.EPIPE:
                 # Perhaps output was piped to less and was quit prior to EOF

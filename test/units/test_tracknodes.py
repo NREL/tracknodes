@@ -57,7 +57,7 @@ class TestTrackNodes(unittest.TestCase):
 
         print(out.getvalue())
 
-        assert( "History of Node Failures" in out.getvalue() )
+        assert( "History of Nodes" in out.getvalue() )
 
     @mock.patch('tracknodes.tracknodes.Popen')
     @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="sinfo")
