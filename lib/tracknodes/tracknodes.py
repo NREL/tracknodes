@@ -28,8 +28,9 @@ class TrackNodes:
         nodecmd_torque_search_cmds = ["pbsnodes", "/usr/bin/pbsnodes", "/bin/pbsnodes", "/usr/local/bin/pbsnodes"]
         nodecmd_slurm_search_cmds = ["sinfo", "/usr/bin/sinfo", "/bin/sinfo", "/usr/local/bin/sinfo"]
         nodecmd_search_cmds = nodecmd_torque_search_cmds + nodecmd_slurm_search_cmds
-        found_node_cmd = False
+        found_node_cmd = True
         if self.nodes_cmd is None:
+            found_node_cmd = False
             for node_cmd in nodecmd_search_cmds:
                 if TrackNodes.which(node_cmd) is not None:
                     self.nodes_cmd = TrackNodes.which(node_cmd)
