@@ -14,6 +14,12 @@ except ImportError:
 class mock_Popen(object):
     pass
 
+class ContextualStringIO(StringIO):
+    def __enter__(self):
+        return self
+    def __exit__(self, *args):
+        self.close() # icecrime does it, so I guess I should, too
+        return False # Indicate that we haven't handled the exception, if received
 
 def mock_communicate_sinfo(self):
     return ["\nbroken ram root 2017-01-02T09:09:82 n010\n",]
@@ -134,3 +140,13 @@ class TestTrackNodes(unittest.TestCase):
         print( tn.resourcemanager )
 
         assert( tn.resourcemanager == "torque" )
+
+    @mock.patch('tracknodes.tracknodes.os.path.isfile', return_value=True)
+    @mock.patch('tracknodes.tracknodes.open', create=True)
+    def test_parse_configfile(self, mock_open, mock_isfile):
+        mock_open.return_value = ContextualStringIO("---\ncmd: 'sinfo'\ndbfile: '/tmp/test.db'\n")
+
+        tn = TrackNodes()
+        tn.parse_configfile()
+
+        assert ( tn.nodes_cmd == 'sinfo' and tn.dbfile == '/tmp/test.db' )

@@ -48,7 +48,7 @@ class TrackNodes:
                           default=False)
         (options, args) = parser.parse_args()
         self.update = options.update
-        self.cmd = options.cmd
+        self.nodes_cmd = options.cmd
         self.dbfile = options.dbfile
         self.verbose = options.verbose
 
@@ -63,8 +63,8 @@ class TrackNodes:
                             if self.dbfile is None:
                                 self.dbfile = str(tracknodes_conf["dbfile"])
                         if "cmd" in tracknodes_conf:
-                            if self.cmd is None:
-                                self.cmd = str(tracknodes_conf["cmd"])
+                            if self.nodes_cmd is None:
+                                self.nodes_cmd = str(tracknodes_conf["cmd"])
 
     def find_nodes_cmd(self):
         """
