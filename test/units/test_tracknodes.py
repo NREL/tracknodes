@@ -18,6 +18,12 @@ class mock_Popen(object):
 def mock_communicate_sinfo(self):
     return ["\nbroken ram root 2017-01-02T09:09:82 n010\n",]
 
+def mock_communicate_torque_version(self):
+    return ["", "Version: 12"]
+
+def mock_communicate_pbspro_version(self):
+    return ["", "pbs_version = 14.1.0"]
+
 
 class TestTrackNodes(unittest.TestCase):
 
@@ -59,6 +65,22 @@ class TestTrackNodes(unittest.TestCase):
 
         assert( "History of Nodes" in out.getvalue() )
 
+    @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="sinfo")
+    def test_run_verbose(self, mock_which):
+        out = StringIO()
+        orig_stdout = sys.stdout
+        sys.stdout = out
+
+        tn = TrackNodes(nodes_cmd="sinfo", verbose=True)
+        tn.resourcemanager="slurm"
+        tn.run()
+
+        sys.stdout = orig_stdout
+
+        print(out.getvalue())
+
+        assert( "Resource Manager Detected" in out.getvalue() )
+
     @mock.patch('tracknodes.tracknodes.Popen')
     @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="sinfo")
     def test_run_update(self, mock_which, mock_popen):
@@ -78,3 +100,37 @@ class TestTrackNodes(unittest.TestCase):
         print(out.getvalue())
 
         assert( "| down | 'broken ram'" in out.getvalue() )
+
+    @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="sinfo")
+    def test_find_nodes_cmd(self, mock_which):
+        tn = TrackNodes()
+        tn.find_nodes_cmd()
+
+        print( tn.nodes_cmd )
+        assert( tn.nodes_cmd == "sinfo" )
+
+    @mock.patch('tracknodes.tracknodes.Popen')
+    @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="pbsnodes")
+    def test_detect_resourcemanager_pbspro(self, mock_which, mock_popen):
+        mock_popen.return_value = mock_Popen()
+        mock_popen.return_value.communicate = types.MethodType(mock_communicate_pbspro_version, mock_popen.return_value)
+
+        tn = TrackNodes(nodes_cmd="pbsnodes")
+        tn.detect_resourcemanager()
+
+        print( tn.resourcemanager )
+
+        assert( tn.resourcemanager == "pbspro" )
+
+    @mock.patch('tracknodes.tracknodes.Popen')
+    @mock.patch('tracknodes.tracknodes.TrackNodes.which', return_value="pbsnodes")
+    def test_detect_resourcemanager_torque(self, mock_which, mock_popen):
+        mock_popen.return_value = mock_Popen()
+        mock_popen.return_value.communicate = types.MethodType(mock_communicate_torque_version, mock_popen.return_value)
+
+        tn = TrackNodes(nodes_cmd="pbsnodes")
+        tn.detect_resourcemanager()
+
+        print( tn.resourcemanager )
+
+        assert( tn.resourcemanager == "torque" )
