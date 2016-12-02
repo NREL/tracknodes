@@ -90,4 +90,4 @@ Options:
 License
 =======
 
-tracknodes is released under the GPL License.
+tracknodes is released under the [GPLv3 License](LICENSE.md).
