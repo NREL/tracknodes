@@ -22,10 +22,13 @@ class ContextualStringIO(StringIO):
         return False # Indicate that we haven't handled the exception, if received
 
 def mock_communicate_sinfo(self):
-    return ["\nbroken ram root 2017-01-02T09:09:82 n010\n",]
+    return ["\nbroken ram root 2017-01-02T09:09:82 n010\n", ""]
 
 def mock_communicate_torque_version(self):
     return ["", "Version: 12"]
+
+def mock_communicate_torque_example1(self):
+    return ["n0294                offline                    other new new notes power fault 20161119", ""]
 
 def mock_communicate_pbspro_version(self):
     return ["", "pbs_version = 14.1.0"]
@@ -150,3 +153,17 @@ class TestTrackNodes(unittest.TestCase):
         tn.parse_configfile()
 
         assert ( tn.nodes_cmd == 'sinfo' and tn.dbfile == '/tmp/test.db' )
+
+    @mock.patch('tracknodes.tracknodes.Popen')
+    def test_parse_pbsnodes_cmd(self, mock_popen):
+        mock_popen.return_value = mock_Popen()
+        mock_popen.return_value.communicate = types.MethodType(mock_communicate_torque_example1, mock_popen.return_value)
+
+        tn = TrackNodes()
+        tn.parse_pbsnodes_cmd("-nl")
+
+        print( tn.current_failed )
+        print( len(tn.current_failed) )
+        print( tn.current_failed[0][0] )
+
+        assert ( len(tn.current_failed) == 1 and tn.current_failed[0][0] == "n0294" )
