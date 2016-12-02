@@ -1,11 +1,16 @@
+""" TrackNodes Module """
+
 import sqlite3 as lite
-import os
 from subprocess import Popen, PIPE
 import errno
 import re
+import optparse
+import os
+import yaml
 
 
 class TrackNodes:
+    """ TrackNodes Interface """
     def __init__(self, update=False, dbfile=None, nodes_cmd=None, verbose=False):
         """
         Create initial sqlite database and initialize connection
@@ -19,6 +24,47 @@ class TrackNodes:
         self.nodes_cmd = TrackNodes.which(nodes_cmd)
         self.verbose = verbose
         self.resourcemanager = None
+
+    def parse_args(self):
+        """ Setup Arguments and Options for CLI """
+        parser = optparse.OptionParser()
+        parser.add_option("-U", "--update", dest="update",
+                          help="Update Database From Current Node States",
+                          metavar="UPDATE",
+                          action="store_true",
+                          default=False)
+        parser.add_option("-f", "--dbfile", dest="dbfile",
+                          help="Database File",
+                          metavar="DBFILE",
+                          default=None)
+        parser.add_option("-c", "--cmd", dest="cmd",
+                          help="binary location, example: /opt/pbsnodes, /opt/sinfo",
+                          metavar="CMD",
+                          default=None)
+        parser.add_option("-v", "--verbose", dest="verbose",
+                          help="Verbose Output",
+                          metavar="VERBOSE",
+                          action="store_true",
+                          default=False)
+        (options, args) = parser.parse_args()
+        self.update = options.update
+        self.cmd = options.cmd
+        self.dbfile = options.dbfile
+        self.verbose = options.verbose
+
+    def parse_configfile(self, configs=['/etc/tracknodes.conf']):
+        # Load Configurations if not set on CLI
+        for configfile in configs:
+            if os.path.isfile(configfile):
+                with open(configfile, 'r') as f:
+                    tracknodes_conf = yaml.load(f)
+                    if tracknodes_conf is not None:
+                        if "dbfile" in tracknodes_conf:
+                            if self.dbfile is None:
+                                self.dbfile = str(tracknodes_conf["dbfile"])
+                        if "cmd" in tracknodes_conf:
+                            if self.cmd is None:
+                                self.cmd = str(tracknodes_conf["cmd"])
 
     def find_nodes_cmd(self):
         """
@@ -307,3 +353,10 @@ class TrackNodes:
             self.fail_nodes()
 
         self.print_history()
+
+if __name__ == "__main__":
+    """ EntryPoint Of Application if used as standalone file """
+    tracknodes = TrackNodes()
+    tracknodes.parse_args()
+    tracknodes.parse_configfile()
+    tracknodes.run()
