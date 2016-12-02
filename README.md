@@ -83,7 +83,7 @@ Options:
   -f DBFILE, --dbfile=DBFILE
                         Database File
   -c CMD, --cmd=CMD
-                        binary location of command to show node state, example: /opt/pbsnodes, /opt/sinfo
+                        Location of command to show node state, example: /opt/pbsnodes, /opt/sinfo
   -v, --verbose         Verbose Output
 ```
 

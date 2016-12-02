@@ -38,7 +38,7 @@ class TrackNodes:
                           metavar="DBFILE",
                           default=None)
         parser.add_option("-c", "--cmd", dest="cmd",
-                          help="binary location, example: /opt/pbsnodes, /opt/sinfo",
+                          help="Location of command to show node state, example: /opt/pbsnodes, /opt/sinfo",
                           metavar="CMD",
                           default=None)
         parser.add_option("-v", "--verbose", dest="verbose",
