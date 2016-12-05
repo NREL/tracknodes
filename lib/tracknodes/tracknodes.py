@@ -171,17 +171,27 @@ class TrackNodes:
         """
         Detect if its PBSpro vs Torque
         """
-        for line in Popen([self.nodes_cmd, '--version'], stdout=PIPE, stderr=PIPE).communicate()[1].strip().split("\n"):
-            fields = line.split()
+        pbsnodes_stdout, pbsnodes_stderr = Popen([self.nodes_cmd, '--version'], stdout=PIPE, stderr=PIPE).communicate()
+        for pbsnodes_out in [pbsnodes_stdout, pbsnodes_stderr]:
+            for line in pbsnodes_out.strip().split("\n"):
+                fields = line.split()
 
-            if len(fields) <= 0:
-                raise Exception("Unable to determine PBSpro or Torque")
+                if len(fields) <= 0:
+                    # Empty Line, thats ok, maybe stderr has what we need
+                    break
 
-            if fields[0] == "pbs_version":
-                return True
-            else:
+                if fields[0] == "pbs_version":
+                    # 'pbs_version = 14.1.0', to stdout, is PBSpro
+                    return True
+                elif fields[0] == "Version:":
+                    # 'Version: 6.0.2', to stderr, is Torque
+                    return False
+
+                # Only care about first line
                 break
-        return False
+
+        # If this is reached, we were unable to detect PBSpro
+        raise Exception("Unable to determine PBSpro or Torque")
 
     def parse_nodes_cmd(self):
         if self.resourcemanager == "torque":
