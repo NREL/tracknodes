@@ -22,16 +22,16 @@ class ContextualStringIO(StringIO):
         return False # Indicate that we haven't handled the exception, if received
 
 def mock_communicate_sinfo(self):
-    return ["\nbroken ram root 2017-01-02T09:09:82 n010\n", ""]
+    return ("\nbroken ram root 2017-01-02T09:09:82 n010\n", "")
 
 def mock_communicate_torque_version(self):
-    return ["", "Version: 12"]
+    return ("", "Version: 12\n")
 
 def mock_communicate_torque_example1(self):
-    return ["n0294                offline                    other new new notes power fault 20161119", ""]
+    return ("n0294                offline                    other new new notes power fault 20161119\n", "")
 
 def mock_communicate_pbspro_version(self):
-    return ["", "pbs_version = 14.1.0"]
+    return ("pbs_version = 14.1.0\n", "\n")
 
 
 class TestTrackNodes(unittest.TestCase):
