@@ -166,6 +166,7 @@ class TrackNodes:
                 if node_record[0] == nodename and not node_record[2] == comment:
                     self.cur.execute("UPDATE CurrentFailedNodes SET State=?,Comment=? WHERE Name=?", (state, comment, nodename))
                     self.cur.execute("INSERT INTO NodeStates VALUES(?, ?, ?, datetime('now'))", (nodename, state, comment))
+                    self.con.commit()
 
     def detect_pbspro(self):
         """
