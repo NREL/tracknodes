@@ -8,7 +8,6 @@ Tracknodes keeps a history of node state and comment changes. It allows system a
 
 [![Build Status](https://secure.travis-ci.org/NREL/tracknodes.png?branch=develop "tracknodes latest build")](http://travis-ci.org/NREL/tracknodes)
 [![PIP Version](https://img.shields.io/pypi/v/tracknodes.svg "tracknodes PyPI version")](https://pypi.python.org/pypi/tracknodes)
-[![PIP Downloads](https://img.shields.io/pypi/dm/tracknodes.svg "tracknodes PyPI downloads")](https://pypi.python.org/pypi/tracknodes)
 [![Coverage Status](https://coveralls.io/repos/NREL/tracknodes/badge.svg?branch=develop&service=github)](https://coveralls.io/github/NREL/tracknodes?branch=develop)
 [![Gitter IM](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/starboarder2001/tracknodes)
 
