@@ -247,16 +247,13 @@ class TrackNodes:
                         if 'state' in part:
                             state = part.split('=')[-1]
                             
-
                 if 'reason' in line:
-                    for part in parts:
-                        if 'reason' in part:
-                            reason = part.split('=')[-1]
+                    reason = line.lstrip()
 
                     if '[' in line and ']' in line:
                         timestamp=(line.split('[')[-1].strip(']')).split('@')[-1]
                         reason = reason + ' ' + timestamp
-
+                
             if 'down' in state:
                 self.current_failed.append((nodename, TrackNodes.encode_state('down'), reason))
             if 'comp' in state:
