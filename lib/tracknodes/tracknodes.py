@@ -5,9 +5,9 @@ from subprocess import Popen, PIPE
 import errno
 import re
 import optparse
-import os
+import os,sys
 import yaml
-
+import datetime
 
 class TrackNodes:
     """ TrackNodes Interface """
@@ -166,7 +166,6 @@ class TrackNodes:
                 if node_record[0] == nodename and not node_record[2] == comment:
                     self.cur.execute("UPDATE CurrentFailedNodes SET State=?,Comment=? WHERE Name=?", (state, comment, nodename))
                     self.cur.execute("INSERT INTO NodeStates VALUES(?, ?, ?, datetime('now'))", (nodename, state, comment))
-                    self.con.commit()
 
     def detect_pbspro(self):
         """
@@ -202,6 +201,7 @@ class TrackNodes:
         elif self.resourcemanager == "slurm":
             self.parse_sinfo_cmd()
         else:
+            print 'ex'
             raise Exception("Unable to parse nodes_cmd: %s, unsupported resource manager: %s" % (self.nodes_cmd, self.resourcemanager))
 
     def parse_pbsnodes_cmd(self, cmd_args):
@@ -220,26 +220,51 @@ class TrackNodes:
 
     def parse_sinfo_cmd(self):
         """
-        Run sinfo -dR (slurm) and parse the output and return an array of tuples [(nodename, state, comment),]
+        Runs sinfo to get the list of nodes, then scontrol to get detailed information about node and, 
+        and from that parses the output to extract state and possible reason
         """
+
         line_num = 0
-        for line in Popen([self.nodes_cmd, '-dR'], stdout=PIPE, stderr=PIPE).communicate()[0].rstrip().split("\n"):
-            # Skip First Line
+
+        for node in Popen(['sinfo','-o %n'],stdout=PIPE, stderr=PIPE).communicate()[0].rstrip().split("\n"):
+            # Skip first line (header)        
             if line_num == 0:
                 line_num += 1
                 continue
 
-            m = re.search(r'^(.*?)\s+([a-zA-Z0-9\-_]+)\s+([0-9\-:T]+)\s+([a-zA-Z0-9_\-]+)$', line)
-            if m:
-                reason = m.group(1)
-                username = m.group(2)
-                timestamp = m.group(3)
-                nodename = m.group(4)
-                # -dR returns only down nodes, so the state is down
+            nodename = node            
+            reason = None
+            timestamp=datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+            state = None
+            query_res=Popen(['scontrol', 'show', 'node',node], stdout=PIPE, stderr=PIPE).communicate()[0].split("\n")
+            for line in query_res:
+
+                line = line.lower()
+                parts = line.split()
+
+                if 'state' in line:
+                    for part in parts:
+                        if 'state' in part:
+                            state = part.split('=')[-1]
+                            
+                if 'reason' in line:
+                    reason = line.lstrip()
+
+                    if '[' in line and ']' in line:
+                        timestamp=(line.split('[')[-1].strip(']')).split('@')[-1]
+                        reason = reason + ' ' + timestamp
+                
+            if 'down' in state:
                 self.current_failed.append((nodename, TrackNodes.encode_state('down'), reason))
-            else:
-                if self.verbose:
-                    print("Parse Error on line: '%s'" % line)
+            if 'comp' in state:
+                self.current_failed.append((nodename, TrackNodes.encode_state('comp'), reason))
+            if 'drain' in state:
+                self.current_failed.append((nodename, TrackNodes.encode_state('drain'), reason))
+
+
+            #else:
+            if self.verbose:
+                print("Parse Error on line: '%s'" % line)
 
             line_num += 1
 
@@ -293,6 +318,10 @@ class TrackNodes:
             state = state | 64
         if ("state-unknown" in str):
             state = state | 128
+        if ("comp" in str):
+            state = state | 256
+        if ("drain" in str):
+            state = state | 512
         if (state == 0):
             """ Undetected State """
             state = state | 1024
@@ -324,6 +353,10 @@ class TrackNodes:
             str += "time-shared,"
         if (state & 128 == 128):
             str += "state-unknown,"
+        if (state & 256 == 256):
+            str += "comp"
+        if (state & 512 == 512):
+            str += "drain"
         if (state & 1024 == 1024):
             str += "undetected-state,"
         return str.rstrip(",")
